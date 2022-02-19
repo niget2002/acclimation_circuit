@@ -50,7 +50,6 @@ def handle_interrupt(pin):
         LATCH['state'] = 1
     else:
         print("Latched")
-        print(LATCH)
 
 INPUT.irq(trigger=machine.Pin.IRQ_RISING, handler=handle_interrupt)
 
@@ -67,14 +66,13 @@ def main():
     global data
 
     screen_start = utime.ticks_ms()
+    while 1:
 
-    if (not INPUT.value()) and LATCH['state']:
-        print("Checking Time")
-        if utime.ticks_diff(utime.ticks_ms(), LATCH['curr_interval']) > LATCH['interval']:
+        if not INPUT.value() and LATCH['state'] and utime.ticks_diff(utime.ticks_ms(), LATCH['curr_interval']) > LATCH['interval']:
             print("Unlatching")
             LATCH['state'] = 0
 
-    while 1:
+
         if utime.ticks_diff(utime.ticks_ms(), screen_start) > screen_interval:
             print_screen("Waiting", PUMP.value(), INPUT.value())
             output_toggle(LED)
